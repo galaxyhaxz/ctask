@@ -1,4 +1,4 @@
-### Dynamic Coroutines
+### Dynamic Coroutines - Proof of Concept
 
 ![chart](chart.png)
 
