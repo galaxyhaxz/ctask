@@ -25,7 +25,7 @@ void FunctionB(void *args)
 	/* no return */
 }
 
-int main(int argc, char *argv)
+int main(int argc, char *argv[])
 {
 	printf("Starting task system\n");
 
