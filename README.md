@@ -13,6 +13,6 @@ Now... this is where the magic happens. Upon the next time the function is execu
 Using this system allows the stack size to grow as needed and manage itself without the annoying guesswork/stack overflows of pre-allocation. It also avoids potential security triggers caused by modern operating systems using the traditional method.
 
 Current limitations are:
-- If the stack pointer is above where it was when the scheduler last ran, it will clobber the delta (this can be fixed by copying the current stack before jumping to the saved on, I just didn't do it).
-- Functions cannot return normally (Again I didn't do it yet but this can be fixed by adding a execution wrapper to ensure `longjmp` is called instead of returning).
+- If the stack pointer is above where it was when the scheduler last ran, it will clobber the delta (this can be fixed by copying the current stack before jumping to the saved one, I just didn't do it).
+- Functions cannot return normally (Again I didn't do it yet but this can be fixed by adding an execution wrapper to ensure `longjmp` is called instead of returning).
 - Only implemented and tested on `x86` and `mips` processors. Will add more in the future
