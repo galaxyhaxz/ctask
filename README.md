@@ -6,7 +6,7 @@ This is a basic implementation of what I have dubbed "dynamic" coroutines. I wan
 
 The traditional way of doing stackful coroutines is to allocate memory for your stack, then point the stack pointer to the heap, and finally jump to the function in question. Whenever yielding, the state is saved and `longjmp` is used to go back to the original state.
 
-The new way uses a system to tackle the two issues mentioned before. Instead, a marker is placed to save the current stack position and the function is then executed normally. Whenever the function needs to yield, the stack is then marked again to create start and end points (hereby the "delta") of the state of the function. Memory is allocated on the heap of this size, and the stack is copied there. As usual `longjmp` is used to return to the scheduler.
+The dynamic way uses a new system to tackle the two issues mentioned before. Instead, a marker is placed to save the current stack position and the function is then executed normally. Whenever the function needs to yield, the stack is then marked again to create start and end points (hereby the "delta") of the state of the function. Memory is allocated on the heap of this size, and the stack is copied there. As usual `longjmp` is used to return to the scheduler.
 
 Now... this is where the magic happens. Upon the next time the function is executed, the stack pointer is then moved to above where it was when the function last yielded. The saved state from the heap is then copied back onto the stack (underneath) where the pointer currently is. Finally, `longjmp` is used as normal to jump back into the old state.
 
