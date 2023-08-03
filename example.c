@@ -3,26 +3,24 @@
 #include <string.h>
 #include "coroutine.h"
 
+static int sgTaskRunState = 2;
+
 void FunctionA(void *args)
 {
-	int i = 0;
-	while (1) {
-		printf("Inside of A - count %d\n", i);
+	for (int i = 0; i <= 5; i++) {
+		printf("Inside of A - count up %d\n", i);
 		TaskYield(1);
-		i++;
 	}
-	/* no return */
+	sgTaskRunState--;
 }
 
 void FunctionB(void *args)
 {
-	int i = 0;
-	while (1) {
-		printf("Inside of B - count %d\n", i);
+	for (int i = 5; i >= 0; i--) {
+		printf("Inside of B - count down %d\n", i);
 		TaskYield(1);
-		i--;
 	}
-	/* no return */
+	sgTaskRunState--;
 }
 
 int main(int argc, char *argv[])
@@ -32,10 +30,11 @@ int main(int argc, char *argv[])
 	TaskCreate(FunctionA, NULL);
 	TaskCreate(FunctionB, NULL);
 
-	for (int i = 0; i < 100; i++) {
+	while (sgTaskRunState != 0) {
 		TaskHandler();
 	}
 
+	printf("All tasks completed!\n");
 	TaskCleanup();
 
 	return 0;

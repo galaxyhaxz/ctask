@@ -33,6 +33,7 @@ void TaskCreate(void (*func)(void *), void *args)
 	AppTask *task;
 
 	task = (AppTask *)malloc(sizeof(AppTask));
+	memset(task, 0, sizeof(AppTask));
 	task->func = func;
 	task->args = args;
 	task->state = 0;
@@ -81,15 +82,20 @@ void TaskYield(int yieldtime)
 	}
 }
 
-static void TaskJump(AppTask *t)
+static void TaskCaller()
+{
+	sgpCurrTask->func(sgpCurrTask->args);
+	sgpCurrTask->state = 2;
+	longjmp(sgMainEnv, 1); // goto TASKJMP
+}
+
+static void TaskJump()
 {
 	if (setjmp(sgMainEnv) == 0) {
-		if (t->state == 0) {
-			t->state = 1;
-			// SetStack(t->stack);
-			t->func(t->args);
-			t->state = 2;
-			// longjmp(sgMainEnv, 1); // goto TASKJMP
+		if (sgpCurrTask->state == 0) {
+			sgpCurrTask->state = 1;
+			// SetStack(sgpCurrTask->stack);
+			TaskCaller();
 		} else {
 			static jmp_buf tempenv;
 			if (setjmp(tempenv) == 0) {
@@ -120,7 +126,7 @@ void TaskHandler()
 		sgpCurrTask = list;
 		list->yieldtime--;
 		if (list->yieldtime == 0) {
-			TaskJump(list);
+			TaskJump();
 			if (list->state == 2) {
 				if (list->pNext != NULL) {
 					if (prev != NULL) {
